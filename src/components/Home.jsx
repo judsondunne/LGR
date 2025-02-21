@@ -1,33 +1,34 @@
-// src/components/Home.jsx
-
 import React, { useEffect, useState } from 'react';
-import { db } from '../firebase'; // Import the Firestore instance
+import { db } from '../firebase';
 import { collection, getDocs, orderBy, query } from "firebase/firestore";
 
 function Home() {
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
+  
 
   // Function to fetch posts from Firestore
   const fetchPosts = async () => {
     try {
-      // Create a query to order posts by creation date (newest first)
       const q = query(collection(db, "posts"), orderBy("time", "desc"));
       const querySnapshot = await getDocs(q);
       const postsData = [];
       querySnapshot.forEach((doc) => {
+        console.log("Fetched post:", doc.data());
         postsData.push({ id: doc.id, ...doc.data() });
       });
+      console.log("All posts data:", postsData);
       setPosts(postsData);
-      setLoading(false);
     } catch (error) {
       console.error("Error fetching posts: ", error);
+    } finally {
       setLoading(false);
     }
   };
 
   // Fetch posts when the component mounts
   useEffect(() => {
+    console.log("Does it?")
     fetchPosts();
   }, []);
 
@@ -74,7 +75,7 @@ function Home() {
             <div style={styles.metadata}>
               <small>By {post.author || 'Unknown Author'}</small>
               <small>
-                {post.time
+                {post.time && post.time.seconds
                   ? ` | ${new Date(post.time.seconds * 1000).toLocaleString()}`
                   : ' | No date provided'}
               </small>
@@ -104,28 +105,28 @@ const styles = {
   postContainer: {
     borderRadius: '5px',
     marginBottom: '20px',
-    overflow: 'hidden' // Removed background color/shadow
+    overflow: 'hidden'
   },
   headerImageContainer: {
     width: '100%',
-    height: '400px', // Fixed height for landscape layout
-    overflow: 'hidden', // Hide overflow to crop the image
+    height: '400px',
+    overflow: 'hidden',
     position: 'relative'
   },
   headerImage: {
     width: '100%',
     height: '100%',
-    objectFit: 'cover', // Ensure the image covers the container and is cropped
-    objectPosition: 'center', // Center the image within the container
+    objectFit: 'cover',
+    objectPosition: 'center'
   },
   postTitle: {
     margin: '15px 10px',
     fontSize: '30px',
-    color: 'black' // Set title color to black
+    color: 'black'
   },
   metadata: {
     margin: '0 10px 10px',
-    fontSize: '16px', // Increased font size
+    fontSize: '16px',
     color: '#666'
   },
   postContent: {
@@ -135,7 +136,7 @@ const styles = {
   },
   postLink: {
     textDecoration: 'none',
-    color: 'inherit' // Inherit color from parent (black)
+    color: 'inherit'
   }
 };
 

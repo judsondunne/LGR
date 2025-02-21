@@ -16,6 +16,7 @@ function App() {
     <div className="App">
       {/* Render Navigation bar only if the current path is not /post/:id */}
       {!isPostPage && <Navigation />}
+      
 
       {/* Define Routes */}
       <Routes>
